@@ -1,10 +1,13 @@
 import unittest
+from asyncio import timeout
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 import time
+
+from helpers.wait_for_helpers import WaitHelpers
 from page_objects.page_object import HomePage
 
 # Setup Chrome WebDriver options
@@ -19,7 +22,7 @@ class TestHomePage(unittest.TestCase):
     def setUp(self):
         self.driver = webdriver.Chrome()
 
-    def test_home_page(self):
+    def test_home_page_search(self):
         """
 
         :return:
@@ -27,21 +30,10 @@ class TestHomePage(unittest.TestCase):
         driver = self.driver
         driver.get("https://www.youtube.com/")
         home_page = HomePage(driver)
-        home_page.fill_search_input("Test")
-        # Locate username and password fields and log in button
-        username_input = driver.find_element(By.ID, "username")
-        password_input = driver.find_element(By.ID, "password")
-        login_button = driver.find_element(By.ID, "loginButton")
-
-        # Enter login credentials
-        username_input.send_keys("your_username")
-        password_input.send_keys("your_password")
-
-        # Submit the form
-        login_button.click()
-
-        # Wait for the page to load and check if login is successful
-        time.sleep(5)
-
-        # Check for login success by finding a logout button or a specific element on the landing page
-        logout_button = driver.find_element(By.ID, "logoutButton")
+        home_page.fill_search_input("Crab Rave")
+        home_page.hit_search_bar_enter()
+        helper = WaitHelpers(self.driver)
+        helper.wait_for_text(text='Noisestorm - Crab Rave [Monstercat Release]', timeout=10)
+        home_page.click_clip_title('Noisestorm - Crab Rave [Monstercat Release]')
+        helper.wait_for_url(url='https://www.youtube.com/watch?v=LDU_Txk06tM', timeout=10)
+        assert driver.find_element(By.PARTIAL_LINK_TEXT, 'Noisestorm - Crab Rave [Monstercat Release]').is_displayed()
