@@ -24,7 +24,13 @@ class TestHomePage(unittest.TestCase):
 
     def test_home_page_search(self):
         """
-
+        Goes to the page
+        Fills in the search input
+        Clicks the search button
+        Waits for the specific text
+        Clicks the title of the clip passed in
+        Waits for the url
+        Verifies the element is visible
         :return:
         """
         driver = self.driver
